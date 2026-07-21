@@ -119,6 +119,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
+window.addEventListener('error', (e) => {
+  const msg = e.message || 'Script error';
+  const loading = document.getElementById('loading');
+  loading.classList.remove('hidden');
+  loading.style.display = 'flex';
+  loading.querySelector('.ring').style.display = 'none';
+  loading.querySelector('p').textContent = 'Error: ' + msg.substring(0, 100);
+  loading.querySelector('p').style.color = '#e07070';
+});
+
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -168,12 +178,12 @@ const fillLight = new THREE.DirectionalLight(0x4a3040, 0.5);
 fillLight.position.set(-5, 5, -5);
 scene.add(fillLight);
 
-const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/');
-const loader = new GLTFLoader();
-loader.setDRACOLoader(dracoLoader);
-
-let modelGroup;
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/');
+  const loader = new GLTFLoader();
+  // Removed setDRACOLoader as Sponza does not use Draco compression
+  
+  let modelGroup;
 let exposureMul = 1.0, ambientMul = 1.0, directMul = 1.0;
 
 loader.load('Sponza.gltf',
