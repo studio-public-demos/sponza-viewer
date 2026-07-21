@@ -224,7 +224,15 @@ function initViewer() {
       loading.classList.add('hidden');
       setTimeout(() => { loading.style.display = 'none'; }, 500);
     },
-    (p) => { if (p.total > 0) loading.querySelector('p').textContent = `Sponza... ${Math.round(p.loaded/p.total*100)}%`; }
+    (p) => { if (p.total > 0) loading.querySelector('p').textContent = `Sponza... ${Math.round(p.loaded/p.total*100)}%`; },
+    (e) => { 
+        console.error(e); 
+        loading.querySelector('.ring').style.display = 'none'; 
+        loading.querySelector('p').textContent = 'Load Error: Check Console'; 
+        loading.querySelector('p').style.color = '#e07070';
+        // Detailed error for debugging:
+        alert('Load Error: ' + e.message + '\nCheck console (F12) for details.');
+    }
   );
 
   const presets = [
