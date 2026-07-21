@@ -6,22 +6,48 @@
 <title>Sponza Palace - 3D Monument Viewer</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0a0a14; overflow: hidden; font-family: system-ui, -apple-system, sans-serif; }
-canvas { display: block; width: 100vw; height: 100vh; }
+body { background: #0a0a14; color: #c8b898; font-family: system-ui, -apple-system, sans-serif; }
+#viewer-container { width: 100%; height: 80vh; position: relative; }
+canvas { display: block; }
 
 #loading {
-  position: fixed; inset: 0; display: flex; flex-direction: column;
+  position: absolute; inset: 0; display: flex; flex-direction: column;
   align-items: center; justify-content: center; background: #0a0a14;
-  z-index: 100; color: #c8b898;
+  z-index: 100; transition: opacity 0.5s ease-out;
 }
-#loading .ring { width: 44px; height: 44px; border: 2px solid rgba(200,184,152,0.12); border-top-color: #c8a050; border-radius: 50%; animation: spin 0.8s linear infinite; }
+.ring { width: 44px; height: 44px; border: 2px solid rgba(200,184,152,0.12); border-top-color: #c8a050; border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-#loading p { margin-top: 14px; font-size: 12px; letter-spacing: 2.5px; opacity: 0.7; font-weight: 300; }
+
+#about-section { padding: 40px; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+#about-section h2 { font-size: 24px; margin-bottom: 15px; color: #fff; }
+#about-section h3 { font-size: 18px; margin: 20px 0 10px; color: #c8a050; }
+#about-section p { margin-bottom: 15px; }
+#about-section ul { margin-left: 20px; margin-bottom: 15px; }
+.cta-btn {
+  display: inline-block; padding: 12px 24px; background: #c8a050; color: #0a0a14;
+  text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px;
+}
 </style>
 </head>
 <body>
 
-<div id="loading"><div class="ring"></div><p id="load-msg">Loading Sponza Palace...</p></div>
+<div id="viewer-container">
+  <div id="loading"><div class="ring"></div><p>Loading Sponza Palace...</p></div>
+</div>
+
+<div id="about-section">
+  <h2>About this Project & NebulaCloud Studio</h2>
+  <p>This interactive 3D monument viewer is a demonstration of high-performance web-based visualization, built to showcase the capabilities of <strong>NebulaCloud Studio</strong>.</p>
+  
+  <h3>NebulaCloud Studio</h3>
+  <p>NebulaCloud Studio is the ultimate platform for architects, 3D artists, and developers to bridge the gap between high-fidelity 3D assets and accessible web-based deployment.</p>
+  <ul>
+    <li><strong>Elevate Client Presentations:</strong> Provide your clients with a browser-based, interactive tour accessible on any device, instantly.</li>
+    <li><strong>Showcase Your Capabilities:</strong> Build a world-class digital portfolio without the headache of complex web infrastructure.</li>
+    <li><strong>Rapid Deployment:</strong> We handle the logistics, so you can go from model to live demo in minutes.</li>
+  </ul>
+  <a href="https://nebulacloud.studio" target="_blank" class="cta-btn">Join the Waitlist</a>
+</div>
 
 <script type="importmap">
 {
@@ -34,38 +60,46 @@ canvas { display: block; width: 100vw; height: 100vh; }
 
 <script type="module">
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-const loadMsg = document.getElementById('load-msg');
-const loading = document.getElementById('loading');
-
+const container = document.getElementById('viewer-container');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+renderer.setSize(container.clientWidth, container.clientHeight);
+container.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0a14);
 
-const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 200);
+const camera = new THREE.PerspectiveCamera(55, container.clientWidth / container.clientHeight, 0.5, 200);
 camera.position.set(8, 5, 8);
 
-const loader = new GLTFLoader();
+const controls = new OrbitControls(camera, renderer.domElement);
+const ambient = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambient);
+const sun = new THREE.DirectionalLight(0xffffff, 2);
+sun.position.set(5, 10, 5);
+scene.add(sun);
 
-// Force fresh load
+const loader = new GLTFLoader();
 loader.load('Sponza.gltf?t=' + Date.now(),
   (gltf) => {
     scene.add(gltf.scene);
-    loading.style.display = 'none';
-    
+    document.getElementById('loading').style.display = 'none';
     function animate() {
       requestAnimationFrame(animate);
+      controls.update();
       renderer.render(scene, camera);
     }
     animate();
-  },
-  (p) => { loadMsg.textContent = `Loading... ${Math.round(p.loaded/p.total*100)}%`; },
-  (e) => { loadMsg.textContent = 'Error: ' + e.message; console.error(e); }
+  }
 );
+
+window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+});
 </script>
 </body>
 </html>
