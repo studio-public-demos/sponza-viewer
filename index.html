@@ -100,7 +100,12 @@ footer a { color: rgba(200,184,152,0.10); text-decoration: none; font-size: 8px;
     <button id="btn-fullscreen" title="Full"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
     <button id="btn-walk" title="Walk"><svg viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg></button>
     <button id="btn-top" title="Top"><svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm-7 7H3v4c0 1.1.9 2 2 2h4v-2H5v-4zM5 5h4V3H5c-1.1 0-2 .9-2 2v4h2V5zm14-2h-4v2h4v4h2V5c0-1.1-.9-2-2-2zm0 16h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4z"/></svg></button>
+    <button id="btn-music" title="Music"><svg viewBox="0 0 24 24"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg></button>
 </div>
+
+<audio id="bg-music" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8c8c8.mp3" type="audio/mpeg">
+</audio>
 
 <footer><p>Sponza Palace | 3D Monument Viewer | Built with NebulaCloud Studio</p></footer>
 
@@ -240,6 +245,21 @@ document.getElementById('btn-fullscreen').addEventListener('click', () => { docu
 
 let walkMode = false, keys = {}, euler = new THREE.Euler(0, 0, 0, 'YXZ');
 const btnWalk = document.getElementById('btn-walk');
+const bgMusic = document.getElementById('bg-music');
+const btnMusic = document.getElementById('btn-music');
+
+let isMusicPlaying = false;
+btnMusic.addEventListener('click', () => {
+  if (isMusicPlaying) {
+    bgMusic.pause();
+    btnMusic.classList.remove('active');
+  } else {
+    bgMusic.play().catch(e => console.log('Autoplay prevented'));
+    btnMusic.classList.add('active');
+  }
+  isMusicPlaying = !isMusicPlaying;
+});
+
 function enterWalk() { walkMode=true; euler.setFromQuaternion(camera.quaternion); controls.enabled=false; btnWalk.classList.add('active'); document.body.requestPointerLock(); }
 function exitWalk() { walkMode=false; controls.enabled=true; controls.target.copy(camera.position).add(new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion)); controls.update(); btnWalk.classList.remove('active'); document.exitPointerLock(); }
 btnWalk.addEventListener('click', () => { walkMode ? exitWalk() : enterWalk(); });
