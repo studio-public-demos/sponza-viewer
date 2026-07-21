@@ -200,7 +200,13 @@ loader.load('Sponza.gltf',
     document.getElementById('loading').classList.add('hidden');
     setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 500);
   },
-  (p) => { if (p.total > 0) document.getElementById('loading').querySelector('p').textContent = `Sponza... ${Math.round(p.loaded/p.total*100)}%`; }
+  (p) => { if (p.total > 0) document.getElementById('loading').querySelector('p').textContent = `Sponza... ${Math.round(p.loaded/p.total*100)}%`; },
+  (e) => { 
+    console.error(e); 
+    document.getElementById('loading').querySelector('.ring').style.display = 'none'; 
+    document.getElementById('loading').querySelector('p').textContent = 'Load Error: See Console'; 
+    alert('Load Error: ' + e.message);
+  }
 );
 
 const presets = [
