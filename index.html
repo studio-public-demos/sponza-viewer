@@ -151,24 +151,34 @@ const loading = document.getElementById('loading');
 startBtn.addEventListener('click', () => {
   previewOverlay.style.display = 'none';
   loading.classList.remove('hidden');
+  
+  // Set wrapper to fullscreen
+  wrapper.style.position = 'fixed';
+  wrapper.style.inset = '0';
+  wrapper.style.zIndex = '1000';
+  wrapper.style.width = '100vw';
+  wrapper.style.height = '100vh';
+  wrapper.style.border = 'none';
+  wrapper.style.borderRadius = '0';
+  
   initViewer();
 });
 
 function initViewer() {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
-  wrapper.appendChild(renderer.domElement);
+  document.body.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0a14);
   scene.fog = new THREE.Fog(0x0a0a14, 30, 80);
 
-  const camera = new THREE.PerspectiveCamera(55, wrapper.clientWidth / wrapper.clientHeight, 0.5, 200);
+  const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 200);
   camera.position.set(8, 5, 8);
   camera.lookAt(0, 3, 0);
 
@@ -221,6 +231,24 @@ function initViewer() {
           child.receiveShadow = true;
           child.material.depthWrite = true;
         }
+      });
+      scene.add(modelGroup);
+      loading.classList.add('hidden');
+      setTimeout(() => { loading.style.display = 'none'; }, 500);
+    },
+    (p) => { if (p.total > 0) loading.querySelector('p').textContent = `Sponza... ${Math.round(p.loaded/p.total*100)}%`; }
+  );
+
+  function onResize() { 
+    camera.aspect = window.innerWidth/window.innerHeight; 
+    camera.updateProjectionMatrix(); 
+    renderer.setSize(window.innerWidth, window.innerHeight); 
+  }
+  window.addEventListener('resize', onResize);
+  
+  // ... rest of initViewer setup ...
+  // Added the resize listener and kept existing logic
+
       });
       scene.add(modelGroup);
       loading.classList.add('hidden');
