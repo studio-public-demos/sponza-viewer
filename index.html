@@ -260,6 +260,19 @@ btnMusic.addEventListener('click', () => {
   isMusicPlaying = !isMusicPlaying;
 });
 
+// Autoplay music on first user interaction
+const playMusicOnInteract = () => {
+  if (!isMusicPlaying) {
+    bgMusic.play().catch(e => console.log('Autoplay prevented'));
+    btnMusic.classList.add('active');
+    isMusicPlaying = true;
+  }
+  document.removeEventListener('click', playMusicOnInteract);
+  document.removeEventListener('keydown', playMusicOnInteract);
+};
+document.addEventListener('click', playMusicOnInteract);
+document.addEventListener('keydown', playMusicOnInteract);
+
 function enterWalk() { walkMode=true; euler.setFromQuaternion(camera.quaternion); controls.enabled=false; btnWalk.classList.add('active'); document.body.requestPointerLock(); }
 function exitWalk() { walkMode=false; controls.enabled=true; controls.target.copy(camera.position).add(new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion)); controls.update(); btnWalk.classList.remove('active'); document.exitPointerLock(); }
 btnWalk.addEventListener('click', () => { walkMode ? exitWalk() : enterWalk(); });
