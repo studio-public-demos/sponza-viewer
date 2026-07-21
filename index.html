@@ -85,13 +85,13 @@ footer a { color: rgba(200,184,152,0.10); text-decoration: none; font-size: 8px;
 <div id="hint">Drag orbit · Scroll zoom · Right-drag pan · W/A/S/D walk</div>
 <div id="preset-label">DAWN</div>
 <div id="preset-strip">
-    <button class="active" data-idx="0">Dawn</button><button data-idx="1">Morning</button><button data-idx="2">Noon</button><button data-idx="3">Golden</button><button data-idx="4">Sunset</button><button data-idx="5">Twilight</button><button data-idx="6">Night</button><button data-idx="7">Moon</button><button data-idx="8">Overcast</button><button data-idx="9">Dramatic</button><button data-idx="10">Warm</button><button data-idx="11">Cool</button>
+    <button data-idx="0">Dawn</button><button data-idx="1">Morning</button><button data-idx="2">Noon</button><button data-idx="3">Golden</button><button data-idx="4">Sunset</button><button data-idx="5">Twilight</button><button data-idx="6">Night</button><button data-idx="7">Moon</button><button data-idx="8">Overcast</button><button data-idx="9">Dramatic</button><button class="active" data-idx="10">Warm</button><button data-idx="11">Cool</button>
 </div>
 <div id="sliders-row">
-    <label>Exp</label><input type="range" id="exposure" min="20" max="250" value="100">
-    <label>Amb</label><input type="range" id="ambient-level" min="10" max="200" value="100">
-    <label>Dir</label><input type="range" id="direct-level" min="10" max="250" value="100">
-    <label><input type="checkbox" id="shadows" checked>Shadow</label>
+    <label>Exp</label><input type="range" id="exposure" min="20" max="250" value="200">
+    <label>Amb</label><input type="range" id="ambient-level" min="10" max="200" value="150">
+    <label>Dir</label><input type="range" id="direct-level" min="10" max="250" value="200">
+    <label><input type="checkbox" id="shadows">Shadow</label>
 </div>
 <div id="controls">
     <button id="btn-rotate" class="active" title="Rotate"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
@@ -208,7 +208,9 @@ const presets = [
   { name:'Cool Int',  ambient:{c:0x203040,i:0.65}, sun:{c:0xccddff,i:2.2,p:[-3,8,3]},    fill:{c:0x446688,i:0.8}, fog:{c:0x101828,d:65} }
 ];
 
-let currentPreset = 0;
+let currentPreset = 10;
+let exposureMul = 2.0, ambientMul = 1.5, directMul = 2.0;
+
 function applyPreset(idx) {
   currentPreset = idx; const p = presets[idx];
   ambientLight.color.set(p.ambient.c); ambientLight.intensity = p.ambient.i * ambientMul;
@@ -217,7 +219,14 @@ function applyPreset(idx) {
   scene.fog.color.set(p.fog.c); scene.fog.far = p.fog.d; scene.background.set(p.fog.c);
   renderer.toneMappingExposure = 1.0 * exposureMul; document.getElementById('preset-label').textContent = p.name;
 }
-applyPreset(0);
+applyPreset(10);
+
+// Load initial states
+document.getElementById('exposure').value = exposureMul * 100;
+document.getElementById('ambient-level').value = ambientMul * 100;
+document.getElementById('direct-level').value = directMul * 100;
+document.getElementById('shadows').checked = false;
+toggleShadows(false);
 
 document.querySelectorAll('#preset-strip button').forEach(btn => {
   btn.addEventListener('click', () => {
