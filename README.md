@@ -1,6 +1,8 @@
 # Sponza Palace - 3D Monument Viewer
 
-Interactive 3D viewer for the Atrium of the Sponza Palace in Dubrovnik, Croatia — a 16th-century Renaissance monument.
+[![Live Demo](https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Sponza/screenshot/large.jpg)](https://studio-public-demos.github.io/sponza-viewer/)
+
+**[▶ Click here to open the 3D Viewer](https://studio-public-demos.github.io/sponza-viewer/)**
 
 ## Features
 
