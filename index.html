@@ -186,8 +186,8 @@ scene.add(fillLight);
   let modelGroup;
 let exposureMul = 1.0, ambientMul = 1.0, directMul = 1.0;
 
-loader.load('Sponza.gltf',
-  (gltf) => {
+  loader.load('Sponza.gltf?t=' + Date.now(),
+    (gltf) => {
     modelGroup = gltf.scene;
     modelGroup.traverse((child) => {
       if (child.isMesh) {
